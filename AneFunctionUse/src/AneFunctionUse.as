@@ -2,37 +2,43 @@ package
 {
 	import com.sdh.AneFunctionExtension;
 	
-	import flash.desktop.NativeApplication;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
-	import flash.events.Event;
+	import flash.events.KeyboardEvent;
+	import flash.ui.Keyboard;
+	import flash.desktop.NativeApplication;
 	
 	public class AneFunctionUse extends Sprite
 	{
-		private var t:AneFunctionExtension;
+		private var _aneFunction:AneFunctionExtension;
 		
 		public function AneFunctionUse()
 		{
 			super();
 			
-			// support autoOrients
 			stage.align = StageAlign.TOP_LEFT;
 			stage.scaleMode = StageScaleMode.NO_SCALE;
+
+			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyPress);
 			
-			t = new AneFunctionExtension();
-			t.toast("토스트 등장");
-			t.vibration(1000);
-			t.deviceInfo("그냥..");
+			_aneFunction = new AneFunctionExtension();
+			_aneFunction.toast("토스트 등장");
+			_aneFunction.vibration(1000);
+			_aneFunction.deviceInfo("그냥..");
 		}
 		
 		/**
-		 * 화면에서 어플리케이션이 사라질 경우 자동으로 종료.
-		 * @param e : 이벤트
+		 * 눌린 키가 무엇인지 확인하고 해당하는 함수 작동시킴
+		 * @param event 키보드 이벤트
 		 */
-		private function deactivate(e:Event):void   
-		{  
-			NativeApplication.nativeApplication.exit();  
+		private function keyPress(event:KeyboardEvent):void 
+		{ 
+			if(event.keyCode == Keyboard.BACK)
+			{
+				event.preventDefault();
+				if(_aneFunction.backPress("그냥..") == true) NativeApplication.nativeApplication.exit();
+			}
 		} 
 	}
 }
