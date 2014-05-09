@@ -170,7 +170,7 @@ package
 				for(var i:int = 0; i < 3; i++)
 				{
 					loadInfo = new LoadInfo();
-					loadInfo.setLoadInfo("file://" + (_pathData)["img" + (i + (j*3) + (_galleryTouchCnt*9)).toString()], 45 + (i*345), 620 + (j*320), 0, 0, imageTouch, true);
+					loadInfo.setLoadInfo((_pathData)["img" + (i + (j*3) + (_galleryTouchCnt*9)).toString()], 45 + (i*345), 620 + (j*320), 0, 0, imageTouch, true);
 					_loadInfoVector.push(loadInfo);
 				}
 			}
