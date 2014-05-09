@@ -88,11 +88,11 @@ package
 			_loadInfoVector.push(loadInfo);
 			
 			loadInfo = new LoadInfo();
-			loadInfo.setLoadInfo("./resource/Button_Gallery.png", 580, 100, 1, 1, previousGallery, false);
+			loadInfo.setLoadInfo("./resource/Button_PreviousGallery.png", 580, 100, 1, 1, previousGallery, false);
 			_loadInfoVector.push(loadInfo);
 			
 			loadInfo = new LoadInfo();
-			loadInfo.setLoadInfo("./resource/Button_Gallery.png", 860, 100, 1, 1, nextGallery, false);
+			loadInfo.setLoadInfo("./resource/Button_NextGallery.png", 860, 100, 1, 1, nextGallery, false);
 			_loadInfoVector.push(loadInfo);
 			
 			loadInfo = new LoadInfo();
@@ -167,8 +167,18 @@ package
 		
 		private function previousGallery(event:TouchEvent):void
 		{
-			//첫페이지 이면
-			if(_galleryTouchCnt == 0) _aneFunction.toast("첫페이지 입니다.");
+			//처음 갤러리를 여는것이면
+			if(_galleryTouchCnt < 0)
+			{
+				_aneFunction.toast("첫페이지 입니다.");
+				_galleryTouchCnt = 0;
+			}
+			//처음 갤러리를 여는 건 아닌데 첫페이지이면
+			else if(_galleryTouchCnt == 0)
+			{
+				_aneFunction.toast("첫페이지 입니다.");
+				return;
+			}
 			//첫페이지가 아니면, 이전 페이지로 이동
 			else _galleryTouchCnt--;
 			
@@ -177,14 +187,26 @@ package
 		
 		private function nextGallery(event:TouchEvent):void
 		{
-			//모든 이미지를 갤러리로 보여줬을 경우 리턴함
-			if(((_galleryTouchCnt+1)*9) >= _pathNum) _aneFunction.toast("모든 이미지를 보셨습니다");
-			//다음 페이지로 이동
+			//처음 갤러리를 여는것이면
+			if(_galleryTouchCnt < 0)
+			{
+				_galleryTouchCnt = 0;
+				_aneFunction.toast("첫페이지 입니다.");
+			}
+			//처음 갤러리를 여는것이 아니면
 			else
 			{
-				_galleryTouchCnt++;
-				gallery(_galleryTouchCnt);
-			}	
+				//다음 페이지로 이동하기전 검사. 다음 페이지가 없을경우
+				if(((_galleryTouchCnt+1)*9) >= _pathNum)
+				{
+					_aneFunction.toast("모든 이미지를 보셨습니다");
+					return;
+				}
+				//다음 페이지가 있을경우
+				else _galleryTouchCnt++;
+			}
+			
+			gallery(_galleryTouchCnt);
 		}
 		
 		private function gallery(galleryTouchCnt:int):void
