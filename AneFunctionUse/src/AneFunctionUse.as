@@ -57,7 +57,7 @@ package
 			_loader = new Loader();
 			_loadInfoVector =  new Vector.<LoadInfo>();
 			_currentLoadImageIdx = 0;
-			_galleryTouchCnt = 0;
+			_galleryTouchCnt = -1;
 			_pathData = _aneFunction.mediaStoreImageLoadFunction("Null");
 			_pathNum = _pathData.imgcnt;
 			_buttonNum = 0;
@@ -167,17 +167,28 @@ package
 		
 		private function previousGallery(event:TouchEvent):void
 		{
-			//앞 페이지로 이동
-			if(_galleryTouchCnt) _galleryTouchCnt--;
-			else _aneFunction.toast("첫페이지 입니다.");
+			//첫페이지 이면
+			if(_galleryTouchCnt == 0) _aneFunction.toast("첫페이지 입니다.");
+			//첫페이지가 아니면, 이전 페이지로 이동
+			else _galleryTouchCnt--;
 			
+			gallery(_galleryTouchCnt);
+		}
+		
+		private function nextGallery(event:TouchEvent):void
+		{
 			//모든 이미지를 갤러리로 보여줬을 경우 리턴함
-			if((_galleryTouchCnt*9) >= _pathNum)
+			if(((_galleryTouchCnt+1)*9) >= _pathNum) _aneFunction.toast("모든 이미지를 보셨습니다");
+			//다음 페이지로 이동
+			else
 			{
-				_aneFunction.toast("모든 이미지를 보셨습니다");
-				return;
-			}
-			
+				_galleryTouchCnt++;
+				gallery(_galleryTouchCnt);
+			}	
+		}
+		
+		private function gallery(galleryTouchCnt:int):void
+		{
 			removeDisplayChild(_buttonNum);
 			
 			var loadInfo:LoadInfo;
@@ -188,7 +199,7 @@ package
 				for(var i:int = 0; i < 3; i++)
 				{
 					//이번에 저장할 이미지 경로는?
-					imgIdx = i + (j*3) + (_galleryTouchCnt*9);
+					imgIdx = i + (j*3) + (galleryTouchCnt*9);
 					
 					//이미지경로를 모두 저장하였을때
 					if(imgIdx == _pathNum)
@@ -199,50 +210,6 @@ package
 						return;
 					}
 						//이미지경로를 저장
-					else
-					{
-						loadInfo = new LoadInfo();
-						loadInfo.setLoadInfo((_pathData)["img" + imgIdx.toString()], 45 + (i*345), 620 + (j*320), 0, 0, imageTouch, true);
-						_loadInfoVector.push(loadInfo);
-					}
-				}
-			}
-			
-			imageLoad();
-		}
-		
-		private function nextGallery(event:TouchEvent):void
-		{
-			//모든 이미지를 갤러리로 보여줬을 경우 리턴함
-			if((_galleryTouchCnt*9) >= _pathNum)
-			{
-				_aneFunction.toast("모든 이미지를 보셨습니다");
-				return;
-			}
-			//다음 페이지로 이동
-			else _galleryTouchCnt++;
-			
-			removeDisplayChild(_buttonNum);
-			
-			var loadInfo:LoadInfo;
-			var imgIdx:int;
-			
-			for(var j:int = 0; j < 3; j++)
-			{
-				for(var i:int = 0; i < 3; i++)
-				{
-					//이번에 저장할 이미지 경로는?
-					imgIdx = i + (j*3) + (_galleryTouchCnt*9);
-					
-					//이미지경로를 모두 저장하였을때
-					if(imgIdx == _pathNum)
-					{
-						//이번 for문 중첩에서 새로 읽은 경로가 있을수도 있으니 일단 imageLoad 호출
-						imageLoad();
-						
-						return;
-					}
-					//이미지경로를 저장
 					else
 					{
 						loadInfo = new LoadInfo();
