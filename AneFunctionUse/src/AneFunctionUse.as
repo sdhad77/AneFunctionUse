@@ -82,28 +82,32 @@ package
 			var loadInfo:LoadInfo = new LoadInfo();
 			loadInfo.setLoadInfo("./resource/Button_Vibration.png", 20, 100, 1, 1, vibration, false);
 			_loadInfoVector.push(loadInfo);
+			_buttonNum++;
 			
 			loadInfo = new LoadInfo();
 			loadInfo.setLoadInfo("./resource/Button_Toast.png", 300, 100, 1, 1, toast, false);
 			_loadInfoVector.push(loadInfo);
+			_buttonNum++;
 			
 			loadInfo = new LoadInfo();
 			loadInfo.setLoadInfo("./resource/Button_PreviousGallery.png", 580, 100, 1, 1, previousGallery, false);
 			_loadInfoVector.push(loadInfo);
+			_buttonNum++;
 			
 			loadInfo = new LoadInfo();
 			loadInfo.setLoadInfo("./resource/Button_NextGallery.png", 860, 100, 1, 1, nextGallery, false);
 			_loadInfoVector.push(loadInfo);
+			_buttonNum++;
 			
 			loadInfo = new LoadInfo();
 			loadInfo.setLoadInfo("./resource/Button_DisplayClear.png", 20, 340, 1, 1, displayClear, false);
 			_loadInfoVector.push(loadInfo);
+			_buttonNum++;
 			
 			loadInfo = new LoadInfo();
 			loadInfo.setLoadInfo("./resource/Button_DeviceInfo.png", 300, 340, 1, 1, deviceInfo, false);
 			_loadInfoVector.push(loadInfo);
-			
-			_buttonNum = 7;
+			_buttonNum++;
 		}
 		
 		/** 
