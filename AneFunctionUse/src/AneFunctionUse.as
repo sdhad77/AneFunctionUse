@@ -103,7 +103,7 @@ package
 			loadInfo.setLoadInfo("./resource/Button_DeviceInfo.png", 300, 340, 1, 1, deviceInfo, false);
 			_loadInfoVector.push(loadInfo);
 			
-			_buttonNum = 6;
+			_buttonNum = 7;
 		}
 		
 		/** 
