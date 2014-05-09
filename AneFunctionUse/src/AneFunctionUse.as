@@ -24,82 +24,80 @@ package
 	{
 		private var _aneFunction:AneFunctionExtension;
 		private var _label:TextField;
-		private var _loader:Loader = new Loader();
-		private var _loadInfoVector:Vector.<LoadInfo> =  new Vector.<LoadInfo>();
-		private var _currentLoadImageIdx:int = 0;
-		private var _galleryTouchCnt:int = 0;
+		private var _loader:Loader;
+		private var _loadInfoVector:Vector.<LoadInfo>;
+		private var _currentLoadImageIdx:int;
+		private var _galleryTouchCnt:int;
 		private var _pathData:Object;
+		private var _buttonNum:int;
 		
 		public function AneFunctionUse()
 		{
 			super();
 			
+			//초기화
+			init();
+			
+			//이미지 불러오기, 버튼 이미지 불러와서 등록
+			imageLoad();
+		}
+		
+		/** 
+		 * 초기화 하는 함수
+		 */
+		private function init():void
+		{
 			stage.align = StageAlign.TOP_LEFT;
 			stage.scaleMode = StageScaleMode.NO_SCALE;
-			
-			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyPress);
 			
 			Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT; 
 			
 			_aneFunction = new AneFunctionExtension();
-
-			var labelText:String = _aneFunction.deviceInfo("DEVICE");
-
-			initTextField(_label, labelText);
+			_loader = new Loader();
+			_loadInfoVector =  new Vector.<LoadInfo>();
+			_currentLoadImageIdx = 0;
+			_galleryTouchCnt = 0;
+			_pathData = _aneFunction.mediaStoreImageLoadFunction("Null");
+			_buttonNum = 0;
 			
-			_pathData = _aneFunction.mediaStoreImageLoadFunction("11");
+			initAddEventListener();
+			initButtonLoadInfo();
+		}
+		
+		/** 
+		 * 어플리케이션이 처음 실행 됐을 때 추가 되어야 하는 이벤트 리스너들을 추가하는 함수
+		 */
+		private function initAddEventListener():void
+		{
+			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyPress);
 			
 			_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, loaderCompleteHandler);
 			_loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, loaderErrorHandler);
-			
-			initLoadInfo();
-			imageLoad();
 		}
 		
-		/**
-		 * 눌린 키가 무엇인지 확인하고 해당하는 함수 작동시킴
-		 * @param event 키보드 이벤트
-		 */
-		private function keyPress(event:KeyboardEvent):void 
-		{ 
-			if(event.keyCode == Keyboard.BACK)
-			{
-				event.preventDefault();
-				if(_aneFunction.backPress("그냥..") == true) NativeApplication.nativeApplication.exit();
-			}
-		} 
-		
-		private function initTextField(label:TextField, str:String):void
-		{
-			label = new TextField();
-			label.autoSize = TextFieldAutoSize.LEFT;
-			label.background = true;
-			label.border = true;
-			
-			var format:TextFormat = new TextFormat();
-			format.font = "Verdana";
-			format.color = 0xFF0000;
-			format.size = 40;
-			format.underline = true;
-			
-			label.defaultTextFormat = format;
-			label.text = str;
-			addChild(label);
-		}
-		
-		private function initLoadInfo():void
+		private function initButtonLoadInfo():void
 		{
 			var loadInfo:LoadInfo = new LoadInfo();
-			loadInfo.setLoadInfo("./resource/Button_Vibration.png", 100, 100, 1, 1, Vibration, false);
+			loadInfo.setLoadInfo("./resource/Button_Vibration.png", 20, 100, 1, 1, vibration, false);
 			_loadInfoVector.push(loadInfo);
 			
 			loadInfo = new LoadInfo();
-			loadInfo.setLoadInfo("./resource/Button_Toast.png", 400, 100, 1, 1, Toast, false);
+			loadInfo.setLoadInfo("./resource/Button_Toast.png", 300, 100, 1, 1, toast, false);
 			_loadInfoVector.push(loadInfo);
 			
 			loadInfo = new LoadInfo();
-			loadInfo.setLoadInfo("./resource/Button_Image.png", 700, 100, 1, 1, Gallery, false);
+			loadInfo.setLoadInfo("./resource/Button_Gallery.png", 580, 100, 1, 1, gallery, false);
 			_loadInfoVector.push(loadInfo);
+			
+			loadInfo = new LoadInfo();
+			loadInfo.setLoadInfo("./resource/Button_DeviceInfo.png", 860, 100, 1, 1, deviceInfo, false);
+			_loadInfoVector.push(loadInfo);
+			
+			loadInfo = new LoadInfo();
+			loadInfo.setLoadInfo("./resource/Button_DisplayClear.png", 20, 340, 1, 1, displayClear, false);
+			_loadInfoVector.push(loadInfo);
+			
+			_buttonNum = 5;
 		}
 		
 		private function imageLoad():void
@@ -138,26 +136,41 @@ package
 			_aneFunction.toast("Error loading image! Here's the error:\n" + event);
 		}
 		
-		private function Vibration(event:TouchEvent):void
+		/**
+		 * 눌린 키가 무엇인지 확인하고 해당하는 함수 작동시킴
+		 * @param event 키보드 이벤트
+		 */
+		private function keyPress(event:KeyboardEvent):void 
+		{ 
+			if(event.keyCode == Keyboard.BACK)
+			{
+				event.preventDefault();
+				if(_aneFunction.backPress("Null") == true) NativeApplication.nativeApplication.exit();
+			}
+		} 
+		
+		private function vibration(event:TouchEvent):void
 		{
-			_aneFunction.vibration(1000);
+			_aneFunction.vibration(500);
 		}
 		
-		private function Toast(event:TouchEvent):void
+		private function toast(event:TouchEvent):void
 		{
 			_aneFunction.toast("Toast");
 		}
 		
-		private function Gallery(event:TouchEvent):void
+		private function gallery(event:TouchEvent):void
 		{
+			removeDisplayChild(_buttonNum);
+			
 			var loadInfo:LoadInfo;
 			
-			for(var j:int = 0; j < 4; j++)
+			for(var j:int = 0; j < 3; j++)
 			{
 				for(var i:int = 0; i < 3; i++)
 				{
 					loadInfo = new LoadInfo();
-					loadInfo.setLoadInfo("file://" + (_pathData)["img" + (i + (j*3) + (_galleryTouchCnt*12)).toString()], 100 + (i*320), 350 + (j*320), 0, 0, ImageTouch, true);
+					loadInfo.setLoadInfo("file://" + (_pathData)["img" + (i + (j*3) + (_galleryTouchCnt*9)).toString()], 45 + (i*345), 620 + (j*320), 0, 0, imageTouch, true);
 					_loadInfoVector.push(loadInfo);
 				}
 			}
@@ -167,9 +180,48 @@ package
 			imageLoad();
 		}
 		
-		private function ImageTouch(event:TouchEvent):void
+		private function imageTouch(event:TouchEvent):void
 		{
 			_aneFunction.toast("이미지 터치");
+		}
+		
+		private function deviceInfo(event:TouchEvent):void
+		{
+			initTextField(_label, _aneFunction.deviceInfo("Null"));
+		}
+		
+		private function initTextField(label:TextField, str:String):void
+		{
+			removeDisplayChild(_buttonNum);
+			
+			var format:TextFormat = new TextFormat();
+			format.font = "Verdana";
+			format.color = 0x000000;
+			format.size = 25;
+			format.underline = true;
+			
+			label = new TextField();
+			label.autoSize = TextFieldAutoSize.LEFT;
+			label.background = true;
+			label.border = true;
+			label.x = 80;
+			label.y = 620;
+			label.defaultTextFormat = format;
+			label.text = str;
+			label.name = "DeviceInfo";
+			
+			addChild(label);
+		}
+		
+		private function displayClear(event:TouchEvent):void
+		{
+			removeDisplayChild(_buttonNum);
+		}
+		
+		
+		private function removeDisplayChild(buttonNum:int):void
+		{
+			while(numChildren > buttonNum) removeChildAt(buttonNum);
 		}
 	}
 }
