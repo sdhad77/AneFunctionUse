@@ -106,6 +106,15 @@ package
 			_buttonNum = 6;
 		}
 		
+		/** 
+		 * displayClear 함수를 호출했을때, 같이 초기화 시킬만한 변수들은 여기에 넣어서 한번에 초기화 시킵니다.
+		 */
+		private function reset():void
+		{
+			//갤러리를 한번도 연적 없는것으로 셋팅합니다.
+			_galleryTouchCnt = -1;
+		}
+		
 		private function imageLoad():void
 		{
 			if(_currentLoadImageIdx < _loadInfoVector.length) _loader.load(new URLRequest(_loadInfoVector[_currentLoadImageIdx].path));
@@ -262,13 +271,14 @@ package
 			format.font = "Verdana";
 			format.color = 0x000000;
 			format.size = 25;
-			format.underline = true;
 			
 			label = new TextField();
-			label.autoSize = TextFieldAutoSize.LEFT;
+			label.autoSize = TextFieldAutoSize.NONE;
+			label.width = 990;
+			label.height = 940;
 			label.background = true;
 			label.border = true;
-			label.x = 80;
+			label.x = 45;
 			label.y = 620;
 			label.defaultTextFormat = format;
 			label.text = str;
@@ -277,14 +287,26 @@ package
 			addChild(label);
 		}
 		
+		/**
+		 * 버튼을 제외한 디스플레이오브젝트들을 제거합니다.
+		 * @param event 디스플레이제거버튼 클릭 이벤트
+		 */
 		private function displayClear(event:TouchEvent):void
 		{
+			//디스플레이 오브젝트 제거
 			removeDisplayChild(_buttonNum);
+			
+			//초기값으로 돌려야할 변수들 초기화 시킴
+			reset();
 		}
-		
-		
+			
+		/**
+		 * 버튼을 제외한 디스플레이 오브젝트들을 모두 제거합니다.
+		 * @param buttonNum 버튼의 갯수
+		 */
 		private function removeDisplayChild(buttonNum:int):void
 		{
+			//현재 디스플레이 오브젝트 갯수가 버튼갯수보다 클 경우
 			while(numChildren > buttonNum) removeChildAt(buttonNum);
 		}
 	}
