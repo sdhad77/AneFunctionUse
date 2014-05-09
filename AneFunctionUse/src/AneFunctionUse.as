@@ -29,6 +29,7 @@ package
 		private var _currentLoadImageIdx:int;
 		private var _galleryTouchCnt:int;
 		private var _pathData:Object;
+		private var _pathNum:int;
 		private var _buttonNum:int;
 		
 		public function AneFunctionUse()
@@ -58,6 +59,7 @@ package
 			_currentLoadImageIdx = 0;
 			_galleryTouchCnt = 0;
 			_pathData = _aneFunction.mediaStoreImageLoadFunction("Null");
+			_pathNum = _pathData.imgcnt;
 			_buttonNum = 0;
 			
 			initAddEventListener();
@@ -161,17 +163,41 @@ package
 		
 		private function gallery(event:TouchEvent):void
 		{
+			//모든 이미지를 갤러리로 보여줬을 경우 리턴함
+			if((_galleryTouchCnt*9) >= _pathNum)
+			{
+				_aneFunction.toast("모든 이미지를 보셨습니다");
+				return;
+			}
+			
 			removeDisplayChild(_buttonNum);
 			
 			var loadInfo:LoadInfo;
+			var imgIdx:int;
 			
 			for(var j:int = 0; j < 3; j++)
 			{
 				for(var i:int = 0; i < 3; i++)
 				{
-					loadInfo = new LoadInfo();
-					loadInfo.setLoadInfo((_pathData)["img" + (i + (j*3) + (_galleryTouchCnt*9)).toString()], 45 + (i*345), 620 + (j*320), 0, 0, imageTouch, true);
-					_loadInfoVector.push(loadInfo);
+					//이번에 저장할 이미지 경로는?
+					imgIdx = i + (j*3) + (_galleryTouchCnt*9);
+					
+					//이미지경로를 모두 저장하였을때
+					if(imgIdx == _pathNum)
+					{
+						//이번 for문 중첩에서 새로 읽은 경로가 있을수도 있으니 일단 imageLoad 호출
+						_galleryTouchCnt++;
+						imageLoad();
+						
+						return;
+					}
+					//이미지경로를 저장
+					else
+					{
+						loadInfo = new LoadInfo();
+						loadInfo.setLoadInfo((_pathData)["img" + imgIdx.toString()], 45 + (i*345), 620 + (j*320), 0, 0, imageTouch, true);
+						_loadInfoVector.push(loadInfo);
+					}
 				}
 			}
 			
