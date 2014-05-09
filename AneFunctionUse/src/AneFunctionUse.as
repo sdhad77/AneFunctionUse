@@ -88,18 +88,22 @@ package
 			_loadInfoVector.push(loadInfo);
 			
 			loadInfo = new LoadInfo();
-			loadInfo.setLoadInfo("./resource/Button_Gallery.png", 580, 100, 1, 1, gallery, false);
+			loadInfo.setLoadInfo("./resource/Button_Gallery.png", 580, 100, 1, 1, previousGallery, false);
 			_loadInfoVector.push(loadInfo);
 			
 			loadInfo = new LoadInfo();
-			loadInfo.setLoadInfo("./resource/Button_DeviceInfo.png", 860, 100, 1, 1, deviceInfo, false);
+			loadInfo.setLoadInfo("./resource/Button_Gallery.png", 860, 100, 1, 1, nextGallery, false);
 			_loadInfoVector.push(loadInfo);
 			
 			loadInfo = new LoadInfo();
 			loadInfo.setLoadInfo("./resource/Button_DisplayClear.png", 20, 340, 1, 1, displayClear, false);
 			_loadInfoVector.push(loadInfo);
 			
-			_buttonNum = 5;
+			loadInfo = new LoadInfo();
+			loadInfo.setLoadInfo("./resource/Button_DeviceInfo.png", 300, 340, 1, 1, deviceInfo, false);
+			_loadInfoVector.push(loadInfo);
+			
+			_buttonNum = 6;
 		}
 		
 		private function imageLoad():void
@@ -161,8 +165,12 @@ package
 			_aneFunction.toast("Toast");
 		}
 		
-		private function gallery(event:TouchEvent):void
+		private function previousGallery(event:TouchEvent):void
 		{
+			//앞 페이지로 이동
+			if(_galleryTouchCnt) _galleryTouchCnt--;
+			else _aneFunction.toast("첫페이지 입니다.");
+			
 			//모든 이미지를 갤러리로 보여줬을 경우 리턴함
 			if((_galleryTouchCnt*9) >= _pathNum)
 			{
@@ -186,7 +194,50 @@ package
 					if(imgIdx == _pathNum)
 					{
 						//이번 for문 중첩에서 새로 읽은 경로가 있을수도 있으니 일단 imageLoad 호출
-						_galleryTouchCnt++;
+						imageLoad();
+						
+						return;
+					}
+						//이미지경로를 저장
+					else
+					{
+						loadInfo = new LoadInfo();
+						loadInfo.setLoadInfo((_pathData)["img" + imgIdx.toString()], 45 + (i*345), 620 + (j*320), 0, 0, imageTouch, true);
+						_loadInfoVector.push(loadInfo);
+					}
+				}
+			}
+			
+			imageLoad();
+		}
+		
+		private function nextGallery(event:TouchEvent):void
+		{
+			//모든 이미지를 갤러리로 보여줬을 경우 리턴함
+			if((_galleryTouchCnt*9) >= _pathNum)
+			{
+				_aneFunction.toast("모든 이미지를 보셨습니다");
+				return;
+			}
+			//다음 페이지로 이동
+			else _galleryTouchCnt++;
+			
+			removeDisplayChild(_buttonNum);
+			
+			var loadInfo:LoadInfo;
+			var imgIdx:int;
+			
+			for(var j:int = 0; j < 3; j++)
+			{
+				for(var i:int = 0; i < 3; i++)
+				{
+					//이번에 저장할 이미지 경로는?
+					imgIdx = i + (j*3) + (_galleryTouchCnt*9);
+					
+					//이미지경로를 모두 저장하였을때
+					if(imgIdx == _pathNum)
+					{
+						//이번 for문 중첩에서 새로 읽은 경로가 있을수도 있으니 일단 imageLoad 호출
 						imageLoad();
 						
 						return;
@@ -201,11 +252,9 @@ package
 				}
 			}
 			
-			_galleryTouchCnt++;
-			
 			imageLoad();
 		}
-		
+
 		private function imageTouch(event:TouchEvent):void
 		{
 			_aneFunction.toast("이미지 터치");
