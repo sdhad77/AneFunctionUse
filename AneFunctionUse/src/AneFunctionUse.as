@@ -14,8 +14,6 @@ package
 	import flash.events.TouchEvent;
 	import flash.net.URLRequest;
 	import flash.text.TextField;
-	import flash.text.TextFieldAutoSize;
-	import flash.text.TextFormat;
 	import flash.ui.Keyboard;
 	import flash.ui.Multitouch;
 	import flash.ui.MultitouchInputMode;
@@ -57,9 +55,6 @@ package
 			_loader = new Loader();
 			_loadInfoVector =  new Vector.<LoadInfo>();
 			_currentLoadImageIdx = 0;
-			_galleryTouchCnt = -1;
-			_pathData = _aneFunction.mediaStoreImageLoadFunction("Null");
-			_pathNum = _pathData.imgcnt;
 			_buttonNum = 0;
 			
 			initAddEventListener();
@@ -80,43 +75,19 @@ package
 		private function initButtonLoadInfo():void
 		{
 			var loadInfo:LoadInfo = new LoadInfo();
-			loadInfo.setLoadInfo("./resource/Button_Vibration.png", 20, 100, 1, 1, vibration, false);
+			loadInfo.setLoadInfo("./resource/Button_Vibration.png", 20, 100, 1, 1, FaceBookLogin, false);
 			_loadInfoVector.push(loadInfo);
 			_buttonNum++;
 			
 			loadInfo = new LoadInfo();
-			loadInfo.setLoadInfo("./resource/Button_Toast.png", 300, 100, 1, 1, toast, false);
+			loadInfo.setLoadInfo("./resource/Button_Toast.png", 300, 100, 1, 1, FaceBookLogout, false);
 			_loadInfoVector.push(loadInfo);
 			_buttonNum++;
-			
-			loadInfo = new LoadInfo();
-			loadInfo.setLoadInfo("./resource/Button_PreviousGallery.png", 580, 100, 1, 1, previousGallery, false);
-			_loadInfoVector.push(loadInfo);
-			_buttonNum++;
-			
-			loadInfo = new LoadInfo();
-			loadInfo.setLoadInfo("./resource/Button_NextGallery.png", 860, 100, 1, 1, nextGallery, false);
-			_loadInfoVector.push(loadInfo);
-			_buttonNum++;
-			
-			loadInfo = new LoadInfo();
-			loadInfo.setLoadInfo("./resource/Button_DisplayClear.png", 20, 340, 1, 1, displayClear, false);
-			_loadInfoVector.push(loadInfo);
-			_buttonNum++;
-			
-			loadInfo = new LoadInfo();
-			loadInfo.setLoadInfo("./resource/Button_DeviceInfo.png", 300, 340, 1, 1, deviceInfo, false);
-			_loadInfoVector.push(loadInfo);
-			_buttonNum++;
-		}
-		
-		/** 
-		 * displayClear 함수를 호출했을때, 같이 초기화 시킬만한 변수들은 여기에 넣어서 한번에 초기화 시킵니다.
-		 */
-		private function reset():void
-		{
-			//갤러리를 한번도 연적 없는것으로 셋팅합니다.
-			_galleryTouchCnt = -1;
+            
+            loadInfo = new LoadInfo();
+            loadInfo.setLoadInfo("./resource/Button_DisplayClear.png", 580, 100, 1, 1, FaceBookStatusUpdate, false);
+            _loadInfoVector.push(loadInfo);
+            _buttonNum++;
 		}
 		
 		private function imageLoad():void
@@ -175,143 +146,22 @@ package
 		
 		private function toast(event:TouchEvent):void
 		{
-			_aneFunction.toast("Toast");
+            _aneFunction.toast("Toast");
 		}
-		
-		private function previousGallery(event:TouchEvent):void
-		{
-			//처음 갤러리를 여는것이면
-			if(_galleryTouchCnt < 0)
-			{
-				_aneFunction.toast("첫페이지 입니다.");
-				_galleryTouchCnt = 0;
-			}
-			//처음 갤러리를 여는 건 아닌데 첫페이지이면
-			else if(_galleryTouchCnt == 0)
-			{
-				_aneFunction.toast("첫페이지 입니다.");
-				return;
-			}
-			//첫페이지가 아니면, 이전 페이지로 이동
-			else _galleryTouchCnt--;
-			
-			gallery(_galleryTouchCnt);
-		}
-		
-		private function nextGallery(event:TouchEvent):void
-		{
-			//처음 갤러리를 여는것이면
-			if(_galleryTouchCnt < 0)
-			{
-				_galleryTouchCnt = 0;
-				_aneFunction.toast("첫페이지 입니다.");
-			}
-			//처음 갤러리를 여는것이 아니면
-			else
-			{
-				//다음 페이지로 이동하기전 검사. 다음 페이지가 없을경우
-				if(((_galleryTouchCnt+1)*9) >= _pathNum)
-				{
-					_aneFunction.toast("모든 이미지를 보셨습니다");
-					return;
-				}
-				//다음 페이지가 있을경우
-				else _galleryTouchCnt++;
-			}
-			
-			gallery(_galleryTouchCnt);
-		}
-		
-		private function gallery(galleryTouchCnt:int):void
-		{
-			removeDisplayChild(_buttonNum);
-			
-			var loadInfo:LoadInfo;
-			var imgIdx:int;
-			
-			for(var j:int = 0; j < 3; j++)
-			{
-				for(var i:int = 0; i < 3; i++)
-				{
-					//이번에 저장할 이미지 경로는?
-					imgIdx = i + (j*3) + (galleryTouchCnt*9);
-					
-					//이미지경로를 모두 저장하였을때
-					if(imgIdx == _pathNum)
-					{
-						//이번 for문 중첩에서 새로 읽은 경로가 있을수도 있으니 일단 imageLoad 호출
-						imageLoad();
-						
-						return;
-					}
-						//이미지경로를 저장
-					else
-					{
-						loadInfo = new LoadInfo();
-						loadInfo.setLoadInfo((_pathData)["img" + imgIdx.toString()], 45 + (i*345), 620 + (j*320), 0, 0, imageTouch, true);
-						_loadInfoVector.push(loadInfo);
-					}
-				}
-			}
-			
-			imageLoad();
-		}
-
-		private function imageTouch(event:TouchEvent):void
-		{
-			_aneFunction.toast("이미지 터치");
-		}
-		
-		private function deviceInfo(event:TouchEvent):void
-		{
-			initTextField(_label, _aneFunction.deviceInfo("Null"));
-		}
-		
-		private function initTextField(label:TextField, str:String):void
-		{
-			removeDisplayChild(_buttonNum);
-			
-			var format:TextFormat = new TextFormat();
-			format.font = "Verdana";
-			format.color = 0x000000;
-			format.size = 25;
-			
-			label = new TextField();
-			label.autoSize = TextFieldAutoSize.NONE;
-			label.width = 990;
-			label.height = 940;
-			label.background = true;
-			label.border = true;
-			label.x = 45;
-			label.y = 620;
-			label.defaultTextFormat = format;
-			label.text = str;
-			label.name = "DeviceInfo";
-			
-			addChild(label);
-		}
-		
-		/**
-		 * 버튼을 제외한 디스플레이오브젝트들을 제거합니다.
-		 * @param event 디스플레이제거버튼 클릭 이벤트
-		 */
-		private function displayClear(event:TouchEvent):void
-		{
-			//디스플레이 오브젝트 제거
-			removeDisplayChild(_buttonNum);
-			
-			//초기값으로 돌려야할 변수들 초기화 시킴
-			reset();
-		}
-			
-		/**
-		 * 버튼을 제외한 디스플레이 오브젝트들을 모두 제거합니다.
-		 * @param buttonNum 버튼의 갯수
-		 */
-		private function removeDisplayChild(buttonNum:int):void
-		{
-			//현재 디스플레이 오브젝트 갯수가 버튼갯수보다 클 경우
-			while(numChildren > buttonNum) removeChildAt(buttonNum);
-		}
+        
+        private function FaceBookLogin(event:TouchEvent):void
+        {
+            _aneFunction.login("530743543715374");
+        }
+        
+        private function FaceBookLogout(event:TouchEvent):void
+        {
+            _aneFunction.logout(null);
+        }
+        
+        private function FaceBookStatusUpdate(event:TouchEvent):void
+        {
+            _aneFunction.statusupdate("Ane 테스트 두번째//");
+        }
 	}
 }
